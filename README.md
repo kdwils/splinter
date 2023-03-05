@@ -10,7 +10,7 @@ Instead, I would prefer to have multiple yaml files where each resource kind liv
 | splinter | - | splinter a single manifest into multiple files by resource kind | --include, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to |
 | splinter | flatten | flatten multiple resource files into a single manifest | --include, -i | list of files or directory to flatten, or both | --output, -i | path & filename to output manifest to |
 
-`splinter --include examples/system-upgrade-controller.yaml --output examples/split/`
+`splinter --include examples/metallb.yaml --output examples/split/`
 
 `splinter -i examples/ -o examples/split/`
 
