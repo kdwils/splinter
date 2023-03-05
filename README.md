@@ -3,7 +3,7 @@
 Simple tool to split or flatten kubernetes yaml resources. It is often the case that I will use `helm template` and end up with a single massive manifest which is messy to work with. Instead, I would prefer to have multiple yaml files where each resource is in its own file.
 
 # Usage
-| Command | Subcommand | Description | Flag | Description | --- | --- |  
+| Command | Subcommand | Description | Flag | Description | Flag | Description |  
 | --- | ----------- | --- | --- | --- | --- | --- |
 | splinter | - | splinter a single manifest into multiple files by resource kind | --include, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to |
 | splinter | flatten | flatten multiple resource files into a single manifest | --include, -i | list of files or directory to flatten, or both | --output, -i | path & filename to output manifest to |
