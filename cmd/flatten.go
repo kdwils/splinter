@@ -51,5 +51,4 @@ func init() {
 
 	flattenCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
 	flattenCmd.Flags().StringVarP(&output, "output", "o", "manifest.yaml", "/path/to/output.yaml")
-	flattenCmd.Flags().StringVarP(&output, "exclude", "e", "", "files to exclude")
 }
