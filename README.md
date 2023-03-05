@@ -16,6 +16,9 @@ Instead, I would prefer to have multiple yaml files where each resource kind liv
 
 `splinter flatten -i examples/split/ -o examples/flatten/my-manifest.yaml`
 
+You can also pipe from stdin
+`helm template my-release sealed-secrets/sealed-secrets | splinter -o my-dir/`
+
 # Installation
 
 `go get github.com/kdwils/splinter`

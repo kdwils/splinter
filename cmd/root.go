@@ -26,10 +26,14 @@ var rootCmd = &cobra.Command{
 	Long:         `split manifests into multiple files by resource kind`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		files := filesFromInput(input)
-
 		p := parser.New()
-		for _, f := range files {
+
+		// https://stackoverflow.com/questions/22744443/check-if-there-is-something-to-read-on-stdin-in-golang
+		if s, err := os.Stdin.Stat(); err == nil && (s.Mode()&os.ModeCharDevice) == 0 {
+			p.Read(os.Stdin)
+		}
+
+		for _, f := range filesFromInput(input) {
 			buf, err := readFile(f)
 			if err != nil {
 				return err

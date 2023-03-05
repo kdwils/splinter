@@ -48,9 +48,11 @@ func readFile(file string) (*bytes.Buffer, error) {
 }
 
 func createFile(path string) (*os.File, error) {
-	err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
-	if err != nil {
-		return nil, err
+	if _, err := os.Stat(filepath.Dir(path)); os.IsNotExist(err) {
+		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return os.Create(path)
