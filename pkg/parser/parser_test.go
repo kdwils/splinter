@@ -2,11 +2,8 @@ package parser
 
 import (
 	"bytes"
-	"io"
 	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func testFlatBytes() []byte {
@@ -26,21 +23,33 @@ metadata:
 
 func TestParser_Split(t *testing.T) {
 	type fields struct {
-		IndentSize int
-	}
-	type args struct {
-		reader io.Reader
+		Resources []Resource
 	}
 	tests := []struct {
 		name   string
 		fields fields
-		args   args
 		want   map[string][]Resource
 	}{
 		{
 			name: "split",
-			args: args{
-				reader: bytes.NewReader(testFlatBytes()),
+			fields: fields{
+				Resources: []Resource{
+					{
+						"apiVersion": "v1",
+						"kind":       "Namespace",
+						"metadata": Resource{
+							"name": "my-namespace",
+						},
+					},
+					{
+						"apiVersion": "v1",
+						"kind":       "ServiceAccount",
+						"metadata": Resource{
+							"name":      "my-service-account",
+							"namespace": "my-namespace",
+						},
+					},
+				},
 			},
 			want: map[string][]Resource{
 				"Namespace": {
@@ -67,53 +76,11 @@ func TestParser_Split(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{}
-			if got := p.Sort(tt.args.reader); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Parser.Split() = %v, want %v", got, tt.want)
+			p := &Parser{
+				Resources: tt.fields.Resources,
 			}
-		})
-	}
-}
-
-func TestParser_Flatten(t *testing.T) {
-	type args struct {
-		reader io.Reader
-	}
-	tests := []struct {
-		name string
-		p    *Parser
-		args args
-		want []Resource
-	}{
-		{
-			name: "flatten",
-			args: args{
-				bytes.NewReader(testFlatBytes()),
-			},
-			want: []Resource{
-				{
-					"apiVersion": "v1",
-					"kind":       "Namespace",
-					"metadata": Resource{
-						"name": "my-namespace",
-					},
-				},
-				{
-					"apiVersion": "v1",
-					"kind":       "ServiceAccount",
-					"metadata": Resource{
-						"name":      "my-service-account",
-						"namespace": "my-namespace",
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{}
-			if got := p.Flatten(tt.args.reader); !assert.ElementsMatch(t, got, tt.want) {
-				t.Errorf("Parser.Flatten() = %v, want %v", got, tt.want)
+			if got := p.Sort(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.Split() = %v, want %v", got, tt.want)
 			}
 		})
 	}

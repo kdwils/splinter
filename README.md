@@ -5,12 +5,12 @@ Simple tool to split or flatten kubernetes yaml resources. It is often the case 
 Instead, I would prefer to have multiple yaml files where each resource kind lives in its own file.
 
 # Usage
-| Command | Subcommand | Description | Flag | Description | Flag | Description |  
-| --- | ----------- | --- | --- | --- | --- | --- |
-| splinter | - | splinter a single manifest into multiple files by resource kind | --include, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to |
-| splinter | flatten | flatten multiple resource files into a single manifest | --include, -i | list of files or directory to flatten, or both | --output, -i | path & filename to output manifest to |
+| Command | Subcommand | Description | Flag | Description | Flag | Description | Flag | Description |
+| --- | ----------- | --- | --- | --- | --- | --- | --- | --- |
+| splinter | - | splinter a single manifest into multiple files by resource kind | --input, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to | --kustomize, -k | spit out a simple kustomization.yaml for split resources |
+| splinter | flatten | flatten multiple resource files into a single manifest | --input, -i | list of files or directory to flatten, or both | --output, -i | path & filename to output manifest to |
 
-`splinter --include examples/metallb.yaml --output examples/split/`
+`splinter --input examples/metallb.yaml --output examples/split/`
 
 `splinter -i examples/ -o examples/split/`
 

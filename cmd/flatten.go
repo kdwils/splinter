@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	"os"
-	"path/filepath"
-
-	fh "github.com/kdwils/splinter/internal/file"
 	"github.com/kdwils/splinter/pkg/parser"
 	"github.com/spf13/cobra"
 )
@@ -16,33 +12,24 @@ var flattenCmd = &cobra.Command{
 	Long:         `flatten multiple kubernetes yaml resources into one file`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fs, err := fh.ListFilesFromInput(input)
-		if err != nil {
-			return err
-		}
+		files := filesFromInput(input)
 
 		p := parser.New()
-		rs := make([]parser.Resource, 0)
-		for _, f := range fs {
-			buf, err := fh.FileToBuffer(f)
+		for _, f := range files {
+			buf, err := readFile(f)
 			if err != nil {
 				return err
 			}
 
-			rs = append(rs, p.Flatten(buf)...)
+			p.Read(buf)
 		}
 
-		err = os.MkdirAll(filepath.Dir(output), os.ModePerm)
+		f, err := createFile(output)
 		if err != nil {
 			return err
 		}
 
-		f, err := os.Create(output)
-		if err != nil {
-			return err
-		}
-
-		return p.Write(f, rs...)
+		return p.Write(f, p.Resources...)
 	},
 }
 

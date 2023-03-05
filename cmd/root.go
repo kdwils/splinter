@@ -4,9 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 
-	fh "github.com/kdwils/splinter/internal/file"
 	"github.com/kdwils/splinter/pkg/parser"
 	"github.com/spf13/cobra"
 
@@ -15,9 +13,10 @@ import (
 )
 
 var (
-	cfgFile string
-	input   []string
-	output  string
+	cfgFile   string
+	input     []string
+	output    string
+	kustomize bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -27,31 +26,20 @@ var rootCmd = &cobra.Command{
 	Long:         `split manifests into multiple files by resource kind`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fs, err := fh.ListFilesFromInput(input)
-		if err != nil {
-			return err
-		}
+		files := filesFromInput(input)
 
 		p := parser.New()
-		rs := make(map[string][]parser.Resource)
-		for _, f := range fs {
-			buf, err := fh.FileToBuffer(f)
+		for _, f := range files {
+			buf, err := readFile(f)
 			if err != nil {
 				return err
 			}
 
-			for k, v := range p.Sort(buf) {
-				rs[k] = append(rs[k], v...)
-			}
+			p.Read(buf)
 		}
 
-		err = os.MkdirAll(output, os.ModePerm)
-		if err != nil {
-			return err
-		}
-
-		for k, v := range rs {
-			f, err := os.Create(path.Join(output, fmt.Sprintf("%s.yaml", strings.ToLower(k))))
+		for k, v := range p.Sort() {
+			f, err := createFile(path.Join(output, p.YamlFile(k)))
 			if err != nil {
 				return err
 			}
@@ -60,6 +48,15 @@ var rootCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
+		}
+
+		if kustomize {
+			f, err := createFile(path.Join(output, "kustomization.yaml"))
+			if err != nil {
+				return err
+			}
+
+			return p.Write(f, p.Kustomize())
 		}
 
 		return nil
@@ -90,6 +87,8 @@ func init() {
 
 	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
 	rootCmd.Flags().StringVarP(&output, "output", "o", "", "/path/to/output/dir")
+	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "create a simple kustomization.yaml")
+
 }
 
 // initConfig reads in config file and ENV variables if set.
