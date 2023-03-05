@@ -16,7 +16,7 @@ var flattenCmd = &cobra.Command{
 	Long:         `flatten multiple kubernetes yaml resources into one file`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fs, err := fh.ListFilesFromInput(input, )
+		fs, err := fh.ListFilesFromInput(input)
 		if err != nil {
 			return err
 		}
