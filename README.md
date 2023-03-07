@@ -33,4 +33,4 @@ helm template my-release sealed-secrets/sealed-secrets | splinter -i some-file.y
 
 # Installation
 
-`go get github.com/kdwils/splinter`
+`go install github.com/kdwils/splinter@latest`
