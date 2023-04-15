@@ -156,10 +156,7 @@ func TestParser_YamlFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{
-				Resources: tt.fields.Resources,
-			}
-			if got := p.YamlFile(tt.args.name); got != tt.want {
+			if got := YamlFileName(tt.args.name); got != tt.want {
 				t.Errorf("Parser.YamlFile() = %v, want %v", got, tt.want)
 			}
 		})

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 
@@ -43,7 +44,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		for k, v := range p.Sort() {
-			f, err := createFile(path.Join(output, p.YamlFile(k)))
+			f, err := createFile(path.Join(output, parser.YamlFileName(k)))
 			if err != nil {
 				return err
 			}
@@ -89,9 +90,14 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+	pwd, err := os.Getwd()
+	if err != nil {
+		log.Printf("could not determine current working dir: %v", err)
+	}
+
 	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
-	rootCmd.Flags().StringVarP(&output, "output", "o", "", "/path/to/output/dir")
-	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "create a simple kustomization.yaml")
+	rootCmd.Flags().StringVarP(&output, "output", "o", pwd, "provide /path/to/output/dir, defaults to current working dir")
+	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "output a simple kustomization.yaml as well")
 
 }
 

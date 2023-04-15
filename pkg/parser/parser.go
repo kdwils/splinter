@@ -61,7 +61,7 @@ func (p *Parser) kustomizeResourcePaths() []string {
 			continue
 		}
 
-		keys = append(keys, p.YamlFile(k))
+		keys = append(keys, YamlFileName(k))
 	}
 
 	sort.Slice(keys, func(i, j int) bool {
@@ -72,7 +72,7 @@ func (p *Parser) kustomizeResourcePaths() []string {
 }
 
 // YamlFileName returns a lowercase name.yaml
-func (p *Parser) YamlFile(name string) string {
+func YamlFileName(name string) string {
 	return fmt.Sprintf("%s.yaml", strings.ToLower(name))
 }
 

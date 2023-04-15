@@ -5,6 +5,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	flattenOutput string
+)
+
 // flattenCmd represents the flatten command
 var flattenCmd = &cobra.Command{
 	Use:          "flatten",
@@ -22,7 +26,7 @@ var flattenCmd = &cobra.Command{
 			p.Read(buf)
 		}
 
-		f, err := createFile(output)
+		f, err := createFile(flattenOutput)
 		if err != nil {
 			return err
 		}
@@ -35,5 +39,5 @@ func init() {
 	rootCmd.AddCommand(flattenCmd)
 
 	flattenCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
-	flattenCmd.Flags().StringVarP(&output, "output", "o", "manifest.yaml", "/path/to/output.yaml")
+	flattenCmd.Flags().StringVarP(&flattenOutput, "output", "o", "manifest.yaml", "/path/to/output.yaml")
 }
