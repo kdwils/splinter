@@ -16,8 +16,12 @@ var flattenCmd = &cobra.Command{
 	Long:         `flatten multiple kubernetes yaml resources into one file`,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		input := make([]string, 0)
+		input = append(input, filesFromInput(args)...)
+		input = removeExclusions(input, exclusions)
+
 		p := parser.New()
-		for _, f := range filesFromInput(input) {
+		for _, f := range input {
 			buf, err := readFile(f)
 			if err != nil {
 				return err
@@ -38,6 +42,6 @@ var flattenCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(flattenCmd)
 
-	flattenCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
 	flattenCmd.Flags().StringVarP(&flattenOutput, "output", "o", "manifest.yaml", "/path/to/output.yaml")
+	flattenCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files to exclude")
 }

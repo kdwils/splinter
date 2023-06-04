@@ -14,10 +14,11 @@ import (
 )
 
 var (
-	cfgFile   string
-	input     []string
-	output    string
-	kustomize bool
+	cfgFile    string
+	output     string
+	input      []string
+	kustomize  bool
+	exclusions []string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -25,7 +26,7 @@ var rootCmd = &cobra.Command{
 	Use:          "splinter",
 	Short:        "split manifests into multiple files by resource kind",
 	Long:         `split manifests into multiple files by resource kind`,
-	SilenceUsage: true,
+	SilenceUsage: false,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		p := parser.New()
 
@@ -34,7 +35,12 @@ var rootCmd = &cobra.Command{
 			p.Read(os.Stdin)
 		}
 
-		for _, f := range filesFromInput(input) {
+		files := make([]string, 0)
+		files = append(files, filesFromInput(args)...)
+		files = append(files, filesFromInput(input)...)
+		files = removeExclusions(files, exclusions)
+
+		for _, f := range files {
 			buf, err := readFile(f)
 			if err != nil {
 				return err
@@ -95,8 +101,9 @@ func init() {
 		log.Printf("could not determine current working dir: %v", err)
 	}
 
-	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "/path/to/input.yaml or /path/to/dir, or both")
 	rootCmd.Flags().StringVarP(&output, "output", "o", pwd, "provide /path/to/output/dir, defaults to current working dir")
+	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "provide /path/to/input/ or input.yaml")
+	rootCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclusions")
 	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "output a simple kustomization.yaml as well")
 
 }

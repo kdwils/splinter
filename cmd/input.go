@@ -57,3 +57,19 @@ func createFile(path string) (*os.File, error) {
 
 	return os.Create(path)
 }
+
+func removeExclusions(input, exclusions []string) []string {
+	for i, in := range input {
+		for _, e := range exclusions {
+			if strings.EqualFold(in, e) {
+				input = removeIndex(input, i)
+			}
+		}
+	}
+
+	return input
+}
+
+func removeIndex(slice []string, index int) []string {
+	return append(slice[:index], slice[index+1:]...)
+}
