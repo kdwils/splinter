@@ -133,78 +133,6 @@ metadata:
 	}
 }
 
-func TestParser_YamlFile(t *testing.T) {
-	type fields struct {
-		Resources []Resource
-	}
-	type args struct {
-		name string
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-		want   string
-	}{
-		{
-			name: "yaml file name",
-			args: args{
-				name: "my-FILE",
-			},
-			want: "my-file.yaml",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := YamlFileName(tt.args.name); got != tt.want {
-				t.Errorf("Parser.YamlFile() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestParser_kustomizeResourcePaths(t *testing.T) {
-	type fields struct {
-		Resources []Resource
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   []string
-	}{
-		{
-			name: "kustomize resource paths",
-			fields: fields{
-				Resources: []Resource{
-					{
-						"kind": "Kustomization",
-					},
-					{
-						"kind": "Service",
-					},
-					{
-						"kind": "Service",
-					},
-					{
-						"kind": "Deployment",
-					},
-				},
-			},
-			want: []string{"deployment.yaml", "service.yaml"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{
-				Resources: tt.fields.Resources,
-			}
-			if got := p.kustomizeResourcePaths(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Parser.kustomizeResourcePaths() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestParser_Kustomize(t *testing.T) {
 	type fields struct {
 		Resources []Resource
@@ -244,8 +172,8 @@ func TestParser_Kustomize(t *testing.T) {
 			p := &Parser{
 				Resources: tt.fields.Resources,
 			}
-			if got := p.Kustomize(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Parser.Kustomize() = %v, want %v", got, tt.want)
+			if got := p.Kustomization(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parser.Kustomization() = %v, want %v", got, tt.want)
 			}
 		})
 	}

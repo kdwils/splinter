@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/kdwils/splinter/pkg/parser"
 	"github.com/spf13/cobra"
@@ -19,6 +21,7 @@ var (
 	input      []string
 	kustomize  bool
 	exclusions []string
+	merge      bool
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -30,7 +33,7 @@ var rootCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		p := parser.New()
 
-		// https://stackoverflow.com/questions/22744443/check-if-there-is-something-to-read-on-stdin-in-golang
+		// shoutout https://stackoverflow.com/questions/22744443/check-if-there-is-something-to-read-on-stdin-in-golang
 		if s, err := os.Stdin.Stat(); err == nil && (s.Mode()&os.ModeCharDevice) == 0 {
 			p.Read(os.Stdin)
 		}
@@ -41,33 +44,26 @@ var rootCmd = &cobra.Command{
 		files = removeExclusions(files, exclusions)
 
 		for _, f := range files {
-			buf, err := readFile(f)
-			if err != nil {
-				return err
-			}
-
-			p.Read(buf)
-		}
-
-		for k, v := range p.Sort() {
-			f, err := createFile(path.Join(output, parser.YamlFileName(k)))
-			if err != nil {
-				return err
-			}
-
-			err = p.Write(f, v...)
-			if err != nil {
-				return err
-			}
+			p.ReadFile(f)
 		}
 
 		if kustomize {
-			f, err := createFile(path.Join(output, "kustomization.yaml"))
+			kustomizeFilePath := path.Join(getKustomizePath(output), "kustomization.yaml")
+			err := p.Create(kustomizeFilePath, p.Kustomization())
 			if err != nil {
 				return err
 			}
+		}
 
-			return p.Write(f, p.Kustomize())
+		if merge {
+			return p.Create(output, p.Resources...)
+		}
+
+		for k, v := range p.Sort() {
+			filepath := path.Join(output, fmt.Sprintf("%s.yaml", strings.ToLower(k)))
+			if err := p.Create(filepath, v...); err != nil {
+				return err
+			}
 		}
 
 		return nil
@@ -101,11 +97,11 @@ func init() {
 		log.Printf("could not determine current working dir: %v", err)
 	}
 
-	rootCmd.Flags().StringVarP(&output, "output", "o", pwd, "provide /path/to/output/dir, defaults to current working dir")
+	rootCmd.Flags().StringVarP(&output, "output", "o", pwd, "provide /path/to/output/dir")
 	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "provide /path/to/input/ or input.yaml")
-	rootCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclusions")
-	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "output a simple kustomization.yaml as well")
-
+	rootCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclude")
+	rootCmd.Flags().BoolVar(&merge, "merge", false, "merge splintered manifests back together")
+	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "spit out a kustomization.yaml")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -132,4 +128,63 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func filesFromInput(input []string) []string {
+	files := make([]string, 0)
+	for _, p := range input {
+		if strings.EqualFold(filepath.Ext(p), ".yaml") {
+			files = append(files, p)
+			continue
+		}
+
+		fileInfo, err := os.Stat(p)
+		if err != nil {
+			continue
+		}
+
+		if !fileInfo.IsDir() {
+			continue
+		}
+
+		dir, err := os.ReadDir(p)
+		if err != nil {
+			continue
+		}
+
+		for _, file := range dir {
+			files = append(files, path.Join(p, file.Name()))
+		}
+	}
+
+	return files
+}
+
+func removeExclusions(input, exclusions []string) []string {
+	for i, in := range input {
+		for _, e := range exclusions {
+			if strings.EqualFold(in, e) {
+				input = removeIndex(input, i)
+			}
+		}
+	}
+
+	return input
+}
+
+func removeIndex(slice []string, index int) []string {
+	return append(slice[:index], slice[index+1:]...)
+}
+
+func getKustomizePath(output string) string {
+	if strings.HasSuffix(output, ".yaml") {
+		dirs := strings.Split(output, "/")
+		if len(dirs) == 0 {
+			return "."
+		}
+
+		return strings.Join(dirs[:len(dirs)-1], "/")
+	}
+
+	return output
 }

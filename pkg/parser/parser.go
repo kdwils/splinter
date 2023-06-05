@@ -1,8 +1,11 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -10,17 +13,45 @@ import (
 )
 
 type Parser struct {
-	Resources []Resource
+	Resources  []Resource
+	IndentSize int
 }
 
 const (
-	indentSize = 2
+	defaultIndentSize = 2
 )
 
-func New() *Parser {
-	return &Parser{
-		Resources: make([]Resource, 0),
+type ParserOpt func(p *Parser)
+
+func New(opts ...ParserOpt) *Parser {
+	p := &Parser{
+		Resources:  make([]Resource, 0),
+		IndentSize: defaultIndentSize,
 	}
+
+	for _, opt := range opts {
+		opt(p)
+	}
+
+	return p
+}
+
+func WithIndentSize(size int) ParserOpt {
+	return func(p *Parser) {
+		p.IndentSize = size
+	}
+}
+
+// ReadFile reads a manifest and appends the resource to the parser
+func (p *Parser) ReadFile(file string) error {
+	b, err := os.ReadFile(file)
+	if err != nil {
+		return err
+	}
+
+	buf := bytes.NewBuffer(b)
+	p.Read(buf)
+	return nil
 }
 
 // Read appends new resources to a parser
@@ -54,40 +85,50 @@ func (p *Parser) Sort() map[string][]Resource {
 	return m
 }
 
-func (p *Parser) kustomizeResourcePaths() []string {
-	keys := make([]string, 0)
+// Kustomization produces a kustomize resource
+func (p *Parser) Kustomization() Resource {
+	resources := make([]string, 0)
 	for k := range p.Sort() {
 		if strings.EqualFold(k, "kustomization") {
 			continue
 		}
 
-		keys = append(keys, YamlFileName(k))
+		resources = append(resources, fmt.Sprintf("%s.yaml", strings.ToLower(k)))
 	}
 
-	sort.Slice(keys, func(i, j int) bool {
-		return keys[i] < keys[j]
+	sort.Slice(resources, func(i, j int) bool {
+		return resources[i] < resources[j]
 	})
 
-	return keys
-}
-
-// YamlFileName returns a lowercase name.yaml
-func YamlFileName(name string) string {
-	return fmt.Sprintf("%s.yaml", strings.ToLower(name))
-}
-
-// Kustomize produces a kustomize resource
-func (p *Parser) Kustomize() Resource {
 	return Resource{
 		"kind":       "Kustomization",
 		"apiVersion": "kustomize.config.k8s.io/v1beta1",
-		"resources":  p.kustomizeResourcePaths(),
+		"resources":  resources,
 	}
 }
 
+// Create generates the folder path for a given file and writes the manifest(s) to supplied path
+func (p *Parser) Create(path string, resources ...Resource) error {
+	if _, err := os.Stat(filepath.Dir(path)); os.IsNotExist(err) {
+		err := os.MkdirAll(filepath.Dir(path), os.ModePerm)
+		if err != nil {
+			return err
+		}
+	}
+
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+
+	return p.Write(f, resources...)
+}
+
+// Write uses the supplied io.Writer to write resources to a yaml file
 func (p *Parser) Write(writer io.Writer, resources ...Resource) error {
+
 	e := yaml.NewEncoder(writer)
-	e.SetIndent(indentSize)
+	e.SetIndent(p.IndentSize)
 	defer e.Close()
 
 	var err error
