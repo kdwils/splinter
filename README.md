@@ -6,7 +6,7 @@ Instead, I would prefer to have multiple yaml files where each resource kind liv
 
 # Usage
 | Command | Subcommand | Description | Flag | Description | Flag | Description | Flag | Description | Flag | Description |
-| --- | ----------- | --- | --- | --- | --- | --- | --- | --- |
+| --- | ----------- | --- | --- | --- | --- | --- | --- | --- |  --- | --- |
 | splinter | - | splinter a single manifest into multiple files by resource kind | --input, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to | --kustomize, -k | spit out a simple kustomization.yaml for split resources | --merge | merge splintered manifests back together
 
 
