@@ -4,6 +4,6 @@ on:
     tags:
       - "*"
 jobs:
-  release:
+  goreleaser:
     uses: kdwils/homelab-workflow/.github/workflows/go-releaser.yml@main
     secrets: inherit
