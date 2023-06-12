@@ -1,8 +1,10 @@
 # Splinter
 
-Simple tool to split or flatten kubernetes yaml resources. It is often the case that I will use `helm template` where certain values are not supported and end up with a single massive manifest which is messy to work with. 
+Simple tool to split or flatten kubernetes manifests. 
 
-Instead, I would prefer to have multiple yaml files where each resource kind lives in its own file.
+It is often the case that I will use `helm template` where certain values are not supported and end up with a single massive manifest which is messy to work with. 
+
+Instead, I would prefer to have multiple smaller manifests separated by resource kind.
 
 # Usage
 
