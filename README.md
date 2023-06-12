@@ -5,9 +5,19 @@ Simple tool to split or flatten kubernetes yaml resources. It is often the case 
 Instead, I would prefer to have multiple yaml files where each resource kind lives in its own file.
 
 # Usage
-| Command | Subcommand | Description | Flag | Description | Flag | Description | Flag | Description | Flag | Description |
-| --- | ----------- | --- | --- | --- | --- | --- | --- | --- |  --- | --- |
-| splinter | - | splinter a single manifest into multiple files by resource kind | --input, -i | individual file or directory to splinter, or both  | --output, -o | directory to output manifests to | --kustomize, -k | spit out a kustomization.yaml | --merge | merge splintered manifests back together
+
+### Commands
+| Command | Subcommand | Description |
+| --- | ----------- | --- |
+| splinter | - | splinter a single manifest into multiple manifests organize by resource kind |
+
+### Flags
+| Flag | Required | Description |
+| --- | ----------- | --- |
+| --include, -i | false | optional flag to set what files or directories to include
+| --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)
+| --output, -o | false | directory to write manifest(s) to
+| --merge | false | merge a list of manifests into a single manifest
 
 
 # Examples
