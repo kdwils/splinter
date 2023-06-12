@@ -1,0 +1,9 @@
+builds:
+  - id: "splinter"
+    goarch:
+      - amd64
+      - arm
+      - arm64
+      - "386"
+
+    mod_timestamp: "{{ .CommitTimestamp }}"
