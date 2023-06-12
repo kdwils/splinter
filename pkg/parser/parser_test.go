@@ -120,7 +120,9 @@ metadata:
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{}
+			p := &Parser{
+				IndentSize: 2,
+			}
 			writer := &bytes.Buffer{}
 			if err := p.Write(writer, tt.args.resources...); (err != nil) != tt.wantErr {
 				t.Errorf("Parser.Write() error = %v, wantErr %v", err, tt.wantErr)
@@ -187,13 +189,14 @@ func TestNew(t *testing.T) {
 		{
 			name: "new",
 			want: &Parser{
-				Resources: make([]Resource, 0),
+				Resources:  make([]Resource, 0),
+				IndentSize: 2,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := New(); !reflect.DeepEqual(got, tt.want) {
+			if got := New(WithIndentSize(2)); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("New() = %v, want %v", got, tt.want)
 			}
 		})
