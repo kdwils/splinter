@@ -47,6 +47,18 @@ var rootCmd = &cobra.Command{
 			p.ReadFile(f)
 		}
 
+		if output == "" {
+			pwd, err := os.Getwd()
+			if err != nil {
+				log.Printf("could not determine current working dir: %v", err)
+			}
+
+			output = pwd
+			if merge {
+				output = filepath.Join(pwd, "my-manifest.yaml")
+			}
+		}
+
 		if kustomize {
 			kustomizeFilePath := path.Join(getKustomizePath(output), "kustomization.yaml")
 			err := p.Create(kustomizeFilePath, p.Kustomization())
@@ -91,17 +103,11 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	pwd, err := os.Getwd()
-	if err != nil {
-		log.Printf("could not determine current working dir: %v", err)
-	}
-
-	rootCmd.Flags().StringVarP(&output, "output", "o", pwd, "provide /path/to/output/dir")
 	rootCmd.Flags().StringSliceVarP(&input, "input", "i", input, "provide /path/to/input/ or input.yaml")
 	rootCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclude")
 	rootCmd.Flags().BoolVar(&merge, "merge", false, "merge splintered manifests back together")
 	rootCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "spit out a kustomization.yaml")
+	rootCmd.Flags().StringVarP(&output, "output", "o", output, "provide /path/to/output/dir")
 }
 
 // initConfig reads in config file and ENV variables if set.
