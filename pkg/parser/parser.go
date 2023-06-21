@@ -126,7 +126,6 @@ func (p *Parser) Create(path string, resources ...Resource) error {
 
 // Write uses the supplied io.Writer to write resources to a yaml file
 func (p *Parser) Write(writer io.Writer, resources ...Resource) error {
-
 	e := yaml.NewEncoder(writer)
 	e.SetIndent(p.IndentSize)
 	defer e.Close()
