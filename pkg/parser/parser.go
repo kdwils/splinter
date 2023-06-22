@@ -95,8 +95,7 @@ func (p *Parser) Remove(target Resource) {
 func (p *Parser) Sort() map[string][]Resource {
 	m := make(map[string][]Resource)
 
-	for i := 0; i < len(p.Resources); i++ {
-		r := p.Resources[i]
+	for _, r := range p.Resources {
 		kind, err := r.Kind()
 		if err != nil {
 			continue
