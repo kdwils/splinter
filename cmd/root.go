@@ -41,6 +41,10 @@ var rootCmd = &cobra.Command{
 		files := make([]string, 0)
 		files = append(files, filesFromInput(args)...)
 		files = append(files, filesFromInput(input)...)
+		if merge {
+			exclusions = append(exclusions, "kustomization.yaml")
+		}
+
 		files = removeExclusions(files, exclusions)
 
 		for _, f := range files {
