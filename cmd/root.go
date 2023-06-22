@@ -51,6 +51,8 @@ var rootCmd = &cobra.Command{
 			p.ReadFile(f)
 		}
 
+		p.Sanitize()
+
 		if output == "" {
 			pwd, err := os.Getwd()
 			if err != nil {
