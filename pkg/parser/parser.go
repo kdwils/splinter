@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"strings"
 
@@ -69,11 +70,33 @@ func (p *Parser) Read(reader io.Reader) {
 	p.Resources = rs
 }
 
+// Sanitize removes any resources that are not kuberenetes manifests from the parser
+func (p *Parser) Sanitize() {
+	for _, r := range p.Resources {
+		if _, err := r.Kind(); err != nil {
+			p.Remove(r)
+		}
+	}
+}
+
+// Remove deletes the target resource from the parser
+func (p *Parser) Remove(target Resource) {
+	for i, r := range p.Resources {
+		if !reflect.DeepEqual(target, r) {
+			continue
+		}
+
+		p.Resources = append(p.Resources[:i], p.Resources[i+1:]...)
+		return
+	}
+}
+
 // Sort returns a map[string][]Resource where the key is the resource kind
 func (p *Parser) Sort() map[string][]Resource {
 	m := make(map[string][]Resource)
 
-	for _, r := range p.Resources {
+	for i := 0; i < len(p.Resources); i++ {
+		r := p.Resources[i]
 		kind, err := r.Kind()
 		if err != nil {
 			continue
