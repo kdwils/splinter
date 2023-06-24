@@ -11,7 +11,9 @@ Instead, I would prefer to have multiple smaller manifests separated by resource
 ### Commands
 | Command | Subcommand | Description |
 | --- | ----------- | --- |
-| splinter | - | splinter a single manifest into multiple manifests organize by resource kind |
+| splinter | split | split a single manifest into multiple manifests organized by resource kind |
+| splinter | merge | merge individual manifests into a single manifest |
+
 
 ### Flags
 | Flag | Required | Description |
@@ -19,28 +21,27 @@ Instead, I would prefer to have multiple smaller manifests separated by resource
 | --include, -i | false | optional flag to set what files or directories to include
 | --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)
 | --output, -o | false | directory to write manifest(s) to
-| --merge | false | merge a list of manifests into a single manifest
 
 
 # Examples
 
 ```
-splinter --input examples/metallb.yaml --output examples/split/
+splinter split --input examples/metallb.yaml --output examples/split/
 ```
 
 ```
-splinter examples/metallb.yaml -o examples/split/
+splinter split examples/metallb.yaml -o examples/split/
 ```
 
 ```
-splinter --merge examples/split/ -o examples/flatten/my-manifest.yaml
+splinter merge examples/split/ -o examples/flatten/my-manifest.yaml
 ```
 
 You can also pipe from stdin
 
 ```
-helm template my-release sealed-secrets/sealed-secrets | splinter -o my-dir/
-helm template my-release sealed-secrets/sealed-secrets | splinter -i anotherfile.yaml -o my-dir/
+helm template my-release sealed-secrets/sealed-secrets | splinter split -o my-dir/
+helm template my-release sealed-secrets/sealed-secrets | splinter split -i anotherfile.yaml -o my-dir/
 ````
 
 # Installation
