@@ -2,13 +2,10 @@ package parser
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -105,28 +102,6 @@ func (p *Parser) Sort() map[string][]Resource {
 	}
 
 	return m
-}
-
-// Kustomization produces a kustomize resource
-func (p *Parser) Kustomization() Resource {
-	resources := make([]string, 0)
-	for k := range p.Sort() {
-		if strings.EqualFold(k, "kustomization") {
-			continue
-		}
-
-		resources = append(resources, fmt.Sprintf("%s.yaml", strings.ToLower(k)))
-	}
-
-	sort.Slice(resources, func(i, j int) bool {
-		return resources[i] < resources[j]
-	})
-
-	return Resource{
-		"kind":       "Kustomization",
-		"apiVersion": "kustomize.config.k8s.io/v1beta1",
-		"resources":  resources,
-	}
 }
 
 // Create generates the folder path for a given file and writes the manifest(s) to supplied path

@@ -135,52 +135,6 @@ metadata:
 	}
 }
 
-func TestParser_Kustomize(t *testing.T) {
-	type fields struct {
-		Resources []Resource
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		want   Resource
-	}{
-		{
-			name: "kustomize",
-			fields: fields{
-				Resources: []Resource{
-					{
-						"kind": "Kustomization",
-					},
-					{
-						"kind": "Service",
-					},
-					{
-						"kind": "Service",
-					},
-					{
-						"kind": "Deployment",
-					},
-				},
-			},
-			want: Resource{
-				"kind":       "Kustomization",
-				"apiVersion": "kustomize.config.k8s.io/v1beta1",
-				"resources":  []string{"deployment.yaml", "service.yaml"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{
-				Resources: tt.fields.Resources,
-			}
-			if got := p.Kustomization(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Parser.Kustomization() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func TestNew(t *testing.T) {
 	tests := []struct {
 		name string
