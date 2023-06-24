@@ -1,6 +1,3 @@
-/*
-Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -30,6 +27,7 @@ var mergeCmd = &cobra.Command{
 			OutputPath: output,
 			Kustomize:  kustomize,
 			Exclusions: exclusions,
+			Delete:     delete,
 		}
 
 		err := splinter.Merge(p, in)
@@ -48,4 +46,5 @@ func init() {
 	mergeCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclude")
 	mergeCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "spit out a kustomization.yaml")
 	mergeCmd.Flags().StringVarP(&output, "output", "o", output, "provide /path/to/output/dir")
+	mergeCmd.Flags().BoolVarP(&delete, "delete", "d", false, "delete files that have been merged")
 }

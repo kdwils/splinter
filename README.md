@@ -16,11 +16,12 @@ Instead, I would prefer to have multiple smaller manifests separated by resource
 
 
 ### Flags
-| Flag | Required | Description |
-| --- | ----------- | --- |
-| --include, -i | false | optional flag to set what files or directories to include
-| --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)
-| --output, -o | false | directory to write manifest(s) to
+| Flag | Required | Description | Command |
+| --- | ----------- | --- | --- |
+| --include, -i | false | optional flag to set what files or directories to include | all |
+| --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)  | all |
+| --output, -o | false | directory to write manifest(s) to | all |
+| --delete, -d | false | delete all files used when merging manifests | merge |
 
 
 # Examples

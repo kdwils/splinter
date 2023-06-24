@@ -18,6 +18,7 @@ var (
 	kustomize  bool
 	exclusions []string
 	merge      bool
+	delete     bool
 )
 
 // rootCmd represents the base command when called without any subcommands
