@@ -13,6 +13,7 @@ type Input struct {
 	InputFiles []string
 	Exclusions []string
 	Kustomize  bool
+	Delete     bool
 	OutputPath string
 }
 

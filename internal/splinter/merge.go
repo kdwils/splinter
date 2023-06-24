@@ -1,6 +1,7 @@
 package splinter
 
 import (
+	"os"
 	"path"
 	"path/filepath"
 
@@ -35,5 +36,16 @@ func Merge(p *parser.Parser, input *Input) error {
 		}
 	}
 
-	return p.Create(input.OutputPath, p.Resources...)
+	err := p.Create(input.OutputPath, p.Resources...)
+	if err != nil {
+		return err
+	}
+
+	if input.Delete {
+		for _, f := range files {
+			os.Remove(f)
+		}
+	}
+
+	return nil
 }
