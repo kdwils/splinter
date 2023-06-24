@@ -37,6 +37,10 @@ func Merge(p *parser.Parser, input *Input) error {
 		}
 	}
 
+	if input.StdOut {
+		return p.Write(os.Stdout, p.Resources...)
+	}
+
 	err := p.Create(input.OutputPath, p.Resources...)
 	if err != nil {
 		return err

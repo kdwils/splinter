@@ -14,6 +14,7 @@ type Input struct {
 	Exclusions []string
 	Kustomize  bool
 	Delete     bool
+	StdOut     bool
 	OutputPath string
 }
 

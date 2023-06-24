@@ -9,6 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	delete bool
+	stdOut bool
+)
+
 // mergeCmd represents the merge command
 var mergeCmd = &cobra.Command{
 	Use:   "merge",
@@ -28,6 +33,7 @@ var mergeCmd = &cobra.Command{
 			Kustomize:  kustomize,
 			Exclusions: exclusions,
 			Delete:     delete,
+			StdOut:     stdOut,
 		}
 
 		err := splinter.Merge(p, in)
@@ -47,4 +53,5 @@ func init() {
 	mergeCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "spit out a kustomization.yaml")
 	mergeCmd.Flags().StringVarP(&output, "output", "o", output, "provide /path/to/output/dir")
 	mergeCmd.Flags().BoolVarP(&delete, "delete", "d", false, "delete files that have been merged")
+	mergeCmd.Flags().BoolVar(&stdOut, "std-out", false, "write to stdout instead of disk")
 }
