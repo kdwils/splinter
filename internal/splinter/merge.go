@@ -9,6 +9,7 @@ import (
 )
 
 func Merge(p *parser.Parser, input *Input) error {
+	input.Exclusions = append(input.Exclusions, "kustomiztion.yaml")
 	input.removeExclusions()
 	files := filesFromInput(input.InputFiles)
 
