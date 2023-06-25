@@ -12,13 +12,8 @@ import (
 // splitCmd represents the split command
 var splitCmd = &cobra.Command{
 	Use:   "split",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "split a single kubernetes manifest into many",
+	Long:  `split a single kubernetes manifest into many`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		p := parser.New()
 
