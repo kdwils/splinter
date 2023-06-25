@@ -22,6 +22,7 @@ Instead, I would prefer to have multiple smaller manifests separated by resource
 | --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)  | all |
 | --output, -o | false | directory to write manifest(s) to | all |
 | --delete, -d | false | delete all files used when merging manifests | merge |
+| --std-out | false | print to stdout instead of writing to disk | merge |
 
 
 # Examples
