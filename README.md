@@ -1,57 +1,110 @@
 # Splinter
 
-Simple tool to split or flatten kubernetes manifests. 
+A command-line tool to split or merge Kubernetes manifests.
 
-It is often the case that I will use `helm template` where certain values are not supported and end up with a single massive manifest which is messy to work with. 
+## Use case
 
-Instead, I would prefer to have multiple smaller manifests separated by resource kind.
+When using tools like `helm template` that don't support certain values, you often end up with a single massive manifest that's difficult to work with. Splinter helps by:
 
-# Usage
+- Splitting large manifests into individual files organized by resource kind
+- Merging multiple manifest files into a single output
+- Optionally generating Kustomize configurations
+
+
+## Installation
+
+### Using Go
+
+```bash
+go install github.com/kdwils/splinter@latest
+```
+
+### From Releases
+
+Download the latest binary from [GitHub Releases](https://github.com/kdwils/splinter/releases)
+
+## Usage
 
 ### Commands
-| Command | Subcommand | Description |
-| --- | ----------- | --- |
-| splinter | split | split a single manifest into multiple manifests organized by resource kind |
-| splinter | merge | merge individual manifests into a single manifest |
+
+| Command | Description |
+|---------|-------------|
+| `split` | Split a single manifest into multiple files organized by resource kind |
+| `merge` | Merge multiple manifest files into a single output (prints to stdout by default) |
+
+### Global Flags
+
+| Flag | Short | Required | Description |
+|------|--------|----------|-------------|
+| `--include` | `-i` | No | Files or directories to include |
+| `--output` | `-o` | No | Output directory/file path |
 
 
-### Flags
-| Flag | Required | Description | Command |
-| --- | ----------- | --- | --- |
-| --include, -i | false | optional flag to set what files or directories to include | all |
-| --kustomize, -k | false | spit out a kustomization.yaml for the splintered or merged manifest(s)  | all |
-| --output, -o | false | directory to write manifest(s) to | all |
-| --delete, -d | false | delete all files used when merging manifests | merge |
-| --std-out | false | print to stdout instead of writing to disk | merge |
+## Examples
 
+### Splitting Manifests
 
-# Examples
-
+With the include flag
+```bash
+splinter split -i examples/metallb.yaml -o examples/split/
 ```
-splinter split --input examples/metallb.yaml --output examples/split/
-```
 
-```
+With an argument
+```bash
 splinter split examples/metallb.yaml -o examples/split/
 ```
 
-```
-splinter merge examples/split/ -o examples/flatten/my-manifest.yaml
+Split and generate a Kustomization file:
+```bash
+splinter split -k -i examples/metallb.yaml -o examples/split/
 ```
 
-You can also pipe from stdin
+### Merging Manifests
 
+Merge multiple files into stdout:
+```bash
+splinter merge -i examples/split/
 ```
+
+Merge into a specific file:
+```bash
+splinter merge -i examples/split/ -o examples/flatten/my-manifest.yaml
+```
+
+### Working with Pipes
+
+Split Helm output:
+```bash
 helm template my-release sealed-secrets/sealed-secrets | splinter split -o my-dir/
-helm template my-release sealed-secrets/sealed-secrets | splinter split -i anotherfile.yaml -o my-dir/
-````
+```
 
-# Installation
+Split Helm output and include additional files:
+```bash
+helm template my-release sealed-secrets/sealed-secrets | splinter split -i existing.yaml -o my-dir/
+```
 
-Go:
+## Development
 
-`go install github.com/kdwils/splinter@latest`
+This project uses [Nix](https://nixos.org/) for development environment consistency. 
 
-Github:
+Assuming a working Nix installation:
 
-check out the latest [release](https://github.com/kdwils/splinter/releases)
+#### Start the nix develop shell
+
+```shell
+nix develop .
+```
+#### Run tests
+```shell
+go test ./...
+```
+
+#### Build binary
+```shell
+go build
+```
+
+#### Run a command
+```shell
+go run main.go merge -i examples/split/
+```
