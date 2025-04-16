@@ -1,0 +1,9 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: test-service
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: test-deployment

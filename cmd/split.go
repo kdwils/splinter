@@ -4,9 +4,16 @@ import (
 	"log"
 	"os"
 
-	"github.com/kdwils/splinter/internal/splinter"
-	"github.com/kdwils/splinter/pkg/parser"
+	"github.com/kdwils/splinter/parser"
 	"github.com/spf13/cobra"
+)
+
+var (
+	splitInputFiles       []string
+	splitOutputPath       string
+	splitIncludeKustomize bool
+	splitExclusions       []string
+	splitCreateKustomize  bool
 )
 
 // splitCmd represents the split command
@@ -17,19 +24,13 @@ var splitCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		p := parser.New()
 
+		var stdin *os.File
 		// shoutout https://stackoverflow.com/questions/22744443/check-if-there-is-something-to-read-on-stdin-in-golang
 		if s, err := os.Stdin.Stat(); err == nil && (s.Mode()&os.ModeCharDevice) == 0 {
-			p.Read(os.Stdin)
+			stdin = os.Stdin
 		}
 
-		in := &splinter.Input{
-			InputFiles: append(input, args...),
-			OutputPath: output,
-			Kustomize:  kustomize,
-			Exclusions: exclusions,
-		}
-
-		err := splinter.Split(p, in)
+		err := p.Split(splitInputFiles, stdin, splitOutputPath, splitCreateKustomize)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -41,8 +42,9 @@ var splitCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(splitCmd)
 
-	splitCmd.Flags().StringSliceVarP(&input, "input", "i", input, "provide /path/to/input/ or input.yaml")
-	splitCmd.Flags().StringSliceVarP(&exclusions, "exclusions", "e", exclusions, "files or directories to exclude")
-	splitCmd.Flags().BoolVarP(&kustomize, "kustomize", "k", false, "spit out a kustomization.yaml")
-	splitCmd.Flags().StringVarP(&output, "output", "o", output, "provide /path/to/output/dir")
+	splitCmd.Flags().StringSliceVarP(&splitInputFiles, "input", "i", splitInputFiles, "provide /path/to/input/ or input.yaml")
+	splitCmd.Flags().StringSliceVarP(&splitExclusions, "exclusions", "e", splitExclusions, "files or directories to exclude")
+	splitCmd.Flags().BoolVarP(&splitCreateKustomize, "kustomize", "k", splitCreateKustomize, "spit out a kustomization.yaml")
+	splitCmd.Flags().StringVarP(&splitOutputPath, "output", "o", splitOutputPath, "provide /path/to/output/dir")
+	splitCmd.MarkFlagRequired("output")
 }
