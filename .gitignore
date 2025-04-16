@@ -1,0 +1,47 @@
+# Go binaries
+/bin/
+/obj/
+
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.a
+splinter
+
+# Test binary, build with `go test`
+/testdata/
+
+# Go workspace file
+go.work
+
+# Vendor directory (if you're using Go modules with vendoring)
+vendor/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Go modules
+/go.sum
+/go.mod
+
+# Coverage output directory
+coverage/
+
+# Debugging and profiling files
+*.out
+*.pprof
+
+# IntelliJ
+*.iml
+*.ipr
+*.iws
