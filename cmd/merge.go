@@ -29,15 +29,6 @@ var mergeCmd = &cobra.Command{
 			stdin = os.Stdin
 		}
 
-		// in := &splinter.Input{
-		// 	InputFiles: append(input, args...),
-		// 	OutputPath: output,
-		// 	Kustomize:  kustomize,
-		// 	Exclusions: exclusions,
-		// 	Delete:     delete,
-		// 	StdOut:     stdOut,
-		// }
-
 		err := p.Merge(mergeInputFiles, stdin, mergeOutputPath)
 		if err != nil {
 			log.Fatal(err)
