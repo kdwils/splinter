@@ -29,6 +29,10 @@ var mergeCmd = &cobra.Command{
 			stdin = os.Stdin
 		}
 
+		for _, a := range args {
+			mergeInputFiles = append(mergeInputFiles, a)
+		}
+
 		err := p.Merge(mergeInputFiles, stdin, mergeOutputPath)
 		if err != nil {
 			log.Fatal(err)

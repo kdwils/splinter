@@ -30,6 +30,10 @@ var splitCmd = &cobra.Command{
 			stdin = os.Stdin
 		}
 
+		for _, a := range args {
+			splitInputFiles = append(splitInputFiles, a)
+		}
+
 		err := p.Split(splitInputFiles, stdin, splitOutputPath, splitCreateKustomize)
 		if err != nil {
 			log.Fatal(err)
