@@ -48,22 +48,26 @@ Download the latest binary from [GitHub Releases](https://github.com/kdwils/spli
 
 ### Splitting Manifests
 
+![split gif](vhs/split.gif)
+
 With the include flag
 ```bash
-splinter split -i examples/metallb.yaml -o examples/split/
+splinter split -i examples/merged/merged.yaml -o examples/split/
 ```
 
 With an argument
 ```bash
-splinter split examples/metallb.yaml -o examples/split/
+splinter split examples/merged/merged.yaml -o examples/split/
 ```
 
 Split and generate a Kustomization file:
 ```bash
-splinter split -k -i examples/metallb.yaml -o examples/split/
+splinter split -k -i examples/merged/merged.yaml -o examples/split/
 ```
 
 ### Merging Manifests
+
+![merge gif](vhs/merge.gif)
 
 Merge multiple files into stdout:
 ```bash
@@ -112,3 +116,7 @@ go build
 ```shell
 go run main.go merge -i examples/split/
 ```
+
+## Acknowledgements
+
+* [vhs](github.com/charmbracelet/vhs) to make the gifs in this readme
