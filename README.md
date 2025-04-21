@@ -4,7 +4,7 @@ A command-line tool to split or merge Kubernetes manifests.
 
 ## Use case
 
-Splinter simplifies working with large Kubernetes manifests, particularly when dealing with tools like `helm template` that generate monolithic outputs. It helps in scenarios where you need to:
+Splinter simplifies working with large Kubernetes manifests.It helps in scenarios where you need to:
 
 - Break down large manifests into manageable, individual files organized by resource type
 - Generate a `kustomization.yaml` to glue the individual files together
@@ -12,6 +12,8 @@ Splinter simplifies working with large Kubernetes manifests, particularly when d
 Or...
 
 - Recombine the individual files back into a single manifest
+
+One example case would be generating a manifest using `helm template` and making configuration changes that are not supported in the helm charts.
 
 ## Installation
 
