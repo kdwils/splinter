@@ -22,21 +22,9 @@ Show
 Type "splinter split examples/merged/merged.yaml -o examples/split -k"
 Enter
 Sleep 3s
-
-Hide
-Type "clear"
-Enter
-Show
-
 Type "ls examples/split"
 Enter
 Sleep 3s
-
-Hide
-Type "clear"
-Enter
-Show
-
 Type "cat examples/split/kustomization.yaml"
 Enter
 Sleep 5s
